@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="hello">Login to TechStacks!</string>
+	<string name="app_name">TechStacks.Auth</string>
+</resources>

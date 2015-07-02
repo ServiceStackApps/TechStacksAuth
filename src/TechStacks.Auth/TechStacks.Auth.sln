@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechStacks.Auth", "TechStacks.Auth\TechStacks.Auth.csproj", "{63DA88AE-F511-4E5C-916E-F87C801BF9A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechStacks.Auth.UITests", "TechStacks.Auth.UITests\TechStacks.Auth.UITests.csproj", "{3C13EFCE-C679-425F-80C4-D241F58B3553}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C13EFCE-C679-425F-80C4-D241F58B3553}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C13EFCE-C679-425F-80C4-D241F58B3553}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C13EFCE-C679-425F-80C4-D241F58B3553}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C13EFCE-C679-425F-80C4-D241F58B3553}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63DA88AE-F511-4E5C-916E-F87C801BF9A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63DA88AE-F511-4E5C-916E-F87C801BF9A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63DA88AE-F511-4E5C-916E-F87C801BF9A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63DA88AE-F511-4E5C-916E-F87C801BF9A8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
