@@ -15,7 +15,9 @@ Once the authentication process has been completed and the users details collect
 
 ``` csharp
 button.Click += delegate {
-	var auth = new ServiceStackAuthenticator("http://techstacks.io","twitter",(jsonServiceClient) => {
+	var auth = 
+	    new ServiceStackAuthenticator("http://techstacks.io","twitter",
+	    (jsonServiceClient) => {
 		//Custom user details service.
 		var userSessionInfo = jsonServiceClient.Get<UserSessionInfo>("/my-session");
 		return new Account(userSessionInfo.UserName,jsonServiceClient.CookieContainer);
@@ -30,8 +32,12 @@ button.Click += delegate {
 			client.CookieContainer = eventArgs.Account.Cookies;
 			//Get user feed for next activity.
 			response = client.Get(new GetUserFeed());
+			
 			var intent = new Intent(this, typeof(UserFeed));
-			intent.PutStringArrayListExtra("techstackfeed", response.Results.Select(x => x.Name).ToList());
+			intent.PutStringArrayListExtra(
+			    "techstackfeed", 
+			    response.Results.Select(x => x.Name).ToList());
+			    
 			//Start user feed activity
 			StartActivity(intent);
 		}
