@@ -62,59 +62,56 @@ namespace TechStacks.Auth
 		}
 	}
 
-	public class ServiceStackAuthenticator : WebAuthenticator 
+	public class ServiceStackAuthenticator : WebAuthenticator
 	{
-		Uri authUrl;
-		Func<ServiceClientBase,Account> getCustomUserDetails;
-		Func<Uri,bool> successUriPredicate;
-		string baseUrl;
-		string provider;
+		readonly Uri authUrl;
+		private readonly string serviceStackBaseUrl;
+		readonly Func<ServiceClientBase, Account> getCustomUserDetails;
 		ServiceClientBase jsonServiceClient;
+
+		public Func<string, ServiceClientBase> ServiceClientFactory { get; set; }
+		public Func<Uri,bool> OnSuccessPredicate { get; set; }
 		Account account;
 
-		public ServiceStackAuthenticator(string serviceStackBaseUrl,string provider,
-			Func<ServiceClientBase,Account> getUserDetails, 
-			Func<Uri,bool> successUriPredicate = null,
-			Func<string,ServiceClientBase> serviceClientFactory = null)
+		public ServiceStackAuthenticator(string serviceStackBaseUrl, 
+			string provider,
+			Func<ServiceClientBase, Account> getUserDetails)
 		{
-			this.authUrl = new Uri(serviceStackBaseUrl + "/auth/" + provider);
-			this.baseUrl = serviceStackBaseUrl;
-			this.provider = provider;
-			this.jsonServiceClient = serviceClientFactory != null ? 
-				serviceClientFactory (serviceStackBaseUrl) : 
-				new JsonServiceClient (serviceStackBaseUrl); 
-			this.successUriPredicate = successUriPredicate;
-			this.getCustomUserDetails = getUserDetails;
-		}
-
-		public override Task<Uri> GetInitialUrlAsync ()
-		{
-			return Task.Run (() => {
-				return authUrl;	
-			});
-		}
-
-		public override void OnPageLoading (Uri url)
-		{
-			bool uriTestResult = successUriPredicate != null ?
-				successUriPredicate (url) :
-				url.Query.Contains ("s=1");
-			
-			if (authUrl.Host == url.Host && uriTestResult) {
-				var cookie = Android.Webkit.CookieManager.Instance.GetCookie (url.AbsoluteUri);
-				CookieContainer cookieJar = new CookieContainer();
-				cookieJar.SetCookies (url, cookie);
-				jsonServiceClient.CookieContainer = cookieJar;
-				if (getCustomUserDetails == null) {
-					throw new ArgumentNullException ("getUserDetails");
-				}
-				account = getCustomUserDetails (jsonServiceClient);
-				OnSucceeded (account);
+			authUrl = new Uri(serviceStackBaseUrl + "/auth/" + provider);
+			if (getUserDetails == null)
+			{
+				throw new ArgumentNullException("getUserDetails");
 			}
-			base.OnPageLoading (url);
+			this.serviceStackBaseUrl = serviceStackBaseUrl;
+			getCustomUserDetails = getUserDetails;
 		}
-						
-		public override void OnPageLoaded (Uri url)
+
+		public override Task<Uri> GetInitialUrlAsync()
+		{
+			return Task.Run(() => authUrl);
+		}
+
+		public override void OnPageLoading(Uri url)
+		{
+			bool uriTestResult = OnSuccessPredicate != null
+				? OnSuccessPredicate(url)
+				: url.Fragment.Contains("s=1") || url.Query.Contains("s=1");
+
+			jsonServiceClient = ServiceClientFactory == null ? new JsonServiceClient(serviceStackBaseUrl) : ServiceClientFactory(serviceStackBaseUrl);
+
+			if (authUrl.Host == url.Host && uriTestResult)
+			{
+				var cookie = Android.Webkit.CookieManager.Instance.GetCookie(url.AbsoluteUri);
+				jsonServiceClient.CookieContainer = jsonServiceClient.CookieContainer ?? new CookieContainer();
+				jsonServiceClient.CookieContainer.SetCookies(new Uri(url.AbsoluteUri), cookie);
+
+				account = getCustomUserDetails(jsonServiceClient);
+				OnSucceeded(account);
+			}
+			base.OnPageLoading(url);
+		}
+
+		public override void OnPageLoaded(Uri url)
 		{
 			//Required override, but don't need to wait for it to finish loading, already have auth cookies.
 			//See 'OnPageLoading'.
